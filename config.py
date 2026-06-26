@@ -14,16 +14,16 @@ else:
     STRING_SESSION = None
 
 # Bot token @Botfather
-BOT_TOKEN = os.environ.get("BOT_TOKEN", "8524884720:AAER0kEVV-jg47z2xPzVbc01ju7DiO0Jxl4")
+BOT_TOKEN = os.environ.get("BOT_TOKEN", "8844837738:AAGAcRCWKnhl9dWI9aFy8v2aHjtORdQdvUs")
 
 # Your API ID from my.telegram.org
-API_ID = int(os.environ.get("API_ID", "32292316"))
+API_ID = int(os.environ.get("API_ID", "38438048"))
 
 # Your API Hash from my.telegram.org
-API_HASH = os.environ.get("API_HASH", "fabe8bd6f78ec2401a88304151f7f98c)
+API_HASH = os.environ.get("API_HASH", "dff46badf3f128854605e70c6cc94f4f")
 
 # Your Owner / Admin Id For Broadcast 
-ADMINS = int(os.environ.get("ADMINS", "8055261564"))
+ADMINS = int(os.environ.get("ADMINS", "8968469556"))
 
 # Your Channel Id In Which Bot Upload Downloaded Video/File/Message etc.
 # And Make Your Bot Admin In this channel with full rights.
