@@ -173,7 +173,6 @@ async def save(client: Client, message: Message):
                     await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
                     return
                 try:
-                    # Public Link ဖြစ်ခဲ့ရင်လည်း Channel ထဲကို တိုက်ရိုက် Forward ပို့ပေးရန် ပြင်ဆင်ထားပါသည်
                     target_chat = int(CHANNEL_ID) if CHANNEL_ID else message.chat.id
                     await client.copy_message(target_chat, msg.chat.id, msg.id)
                 except:
@@ -183,9 +182,9 @@ async def save(client: Client, message: Message):
                         if ERROR_MESSAGE == True:
                             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
-            custom_wait = random.randint(30, 90)
-            await asyncio.sleep(custom_wait)
-            
+                custom_wait = random.randint(30, 90)
+                await asyncio.sleep(custom_wait)
+                
         if LOGIN_SYSTEM == True:
             try:
                 await acc.disconnect()
@@ -211,7 +210,6 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
     
-    # Text သီးသန့်ပို့စ်များအတွက် Channel သို့ တန်းပို့ရန် (Reply Box ဖြုတ်ထားပါသည်)
     if "Text" == msg_type:
         try:
             await client.send_message(chat, msg.text, entities=msg.entities, parse_mode=enums.ParseMode.HTML)
@@ -233,12 +231,10 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
     
-    # Upload မတင်ခင် Random Delay ပေးခြင်း
     upload_delay = random.randint(5, 15)
     await asyncio.sleep(upload_delay)
     asyncio.create_task(upstatus(client, f'{message.id}upstatus.txt', smsg, chat))
 
-    # မူရင်းစာသားကြော်ငြာ (Caption) များကို ဖျက်ချပစ်ရန်
     caption = None
     
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
@@ -366,8 +362,3 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
         return "Text"
     except:
         pass
-        
-
-# Don't Remove Credit @VJ_Bots
-# Subscribe YouTube Channel For Amazing Bot @Tech_VJ
-# Ask Doubt on telegram @KingVJ01
