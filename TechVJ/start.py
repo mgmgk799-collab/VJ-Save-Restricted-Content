@@ -228,7 +228,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML) 
         return await smsg.delete()
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
-		upload_delay = random.randint(5, 15)
+	upload_delay = random.randint(5, 15)
     await asyncio.sleep(upload_delay)
     asyncio.create_task(upstatus(client, f'{message.id}upstatus.txt', smsg, chat))
 
