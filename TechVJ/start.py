@@ -21,7 +21,6 @@ async def downstatus(client, statusfile, message, chat):
     while True:
         if os.path.exists(statusfile):
             break
-
         await asyncio.sleep(3)
       
     while os.path.exists(statusfile):
@@ -39,7 +38,6 @@ async def upstatus(client, statusfile, message, chat):
     while True:
         if os.path.exists(statusfile):
             break
-
         await asyncio.sleep(3)      
     while os.path.exists(statusfile):
         with open(statusfile, "r") as upread:
@@ -143,7 +141,7 @@ async def save(client: Client, message: Message):
                 await client.send_message(message.chat.id, f"**String Session is not Set**", reply_to_message_id=message.id)
                 return
             acc = TechVJUser
-				
+                
         batch_temp.IS_BATCH[message.from_user.id] = False
         for msgid in range(fromID, toID+1):
             if batch_temp.IS_BATCH.get(message.from_user.id): break
@@ -169,14 +167,15 @@ async def save(client: Client, message: Message):
             # public
             else:
                 username = datas[3]
-
                 try:
                     msg = await client.get_messages(username, msgid)
                 except UsernameNotOccupied: 
                     await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
                     return
                 try:
-                    await client.copy_message(message.chat.id, msg.chat.id, msg.id, reply_to_message_id=message.id)
+                    # Public Link ဖြစ်ခဲ့ရင်လည်း Channel ထဲကို တိုက်ရိုက် Forward ပို့ပေးရန် ပြင်ဆင်ထားပါသည်
+                    target_chat = int(CHANNEL_ID) if CHANNEL_ID else message.chat.id
+                    await client.copy_message(target_chat, msg.chat.id, msg.id)
                 except:
                     try:    
                         await handle_private(client, acc, message, username, msgid)               
@@ -186,12 +185,12 @@ async def save(client: Client, message: Message):
 
             custom_wait = random.randint(30, 90)
             await asyncio.sleep(custom_wait)
-            await asyncio.sleep(WAITING_TIME)
+            
         if LOGIN_SYSTEM == True:
             try:
                 await acc.disconnect()
             except:
-                pass                				
+                pass                                
         batch_temp.IS_BATCH[message.from_user.id] = True
 
 
@@ -201,6 +200,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
     if msg.empty: return 
     msg_type = get_message_type(msg)
     if not msg_type: return 
+    
     if CHANNEL_ID:
         try:
             chat = int(CHANNEL_ID)
@@ -208,10 +208,13 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             chat = message.chat.id
     else:
         chat = message.chat.id
+        
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
+    
+    # Text သီးသန့်ပို့စ်များအတွက် Channel သို့ တန်းပို့ရန် (Reply Box ဖြုတ်ထားပါသည်)
     if "Text" == msg_type:
         try:
-            await client.send_message(chat, msg.text, entities=msg.entities, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
+            await client.send_message(chat, msg.text, entities=msg.entities, parse_mode=enums.ParseMode.HTML)
             return 
         except Exception as e:
             if ERROR_MESSAGE == True:
@@ -227,13 +230,17 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         if ERROR_MESSAGE == True:
             await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML) 
         return await smsg.delete()
+        
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
-	upload_delay = random.randint(5, 15)
+    
+    # Upload မတင်ခင် Random Delay ပေးခြင်း
+    upload_delay = random.randint(5, 15)
     await asyncio.sleep(upload_delay)
     asyncio.create_task(upstatus(client, f'{message.id}upstatus.txt', smsg, chat))
 
- 
-        caption = None
+    # မူရင်းစာသားကြော်ငြာ (Caption) များကို ဖျက်ချပစ်ရန်
+    caption = None
+    
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
             
     if "Document" == msg_type:
@@ -241,9 +248,8 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             ph_path = await acc.download_media(msg.document.thumbs[0].file_id)
         except:
             ph_path = None
-        
         try:
-            await client.send_document(chat, file, thumb=ph_path, caption=caption, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
+            await client.send_document(chat, file, thumb=ph_path, caption=caption, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
@@ -255,9 +261,8 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             ph_path = await acc.download_media(msg.video.thumbs[0].file_id)
         except:
             ph_path = None
-        
         try:
-            await client.send_video(chat, file, duration=msg.video.duration, width=msg.video.width, height=msg.video.height, thumb=ph_path, caption=caption, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
+            await client.send_video(chat, file, duration=msg.video.duration, width=msg.video.width, height=msg.video.height, thumb=ph_path, caption=caption, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
@@ -265,21 +270,21 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
 
     elif "Animation" == msg_type:
         try:
-            await client.send_animation(chat, file, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
+            await client.send_animation(chat, file, parse_mode=enums.ParseMode.HTML)
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
         
     elif "Sticker" == msg_type:
         try:
-            await client.send_sticker(chat, file, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
+            await client.send_sticker(chat, file, parse_mode=enums.ParseMode.HTML)
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)     
 
     elif "Voice" == msg_type:
         try:
-            await client.send_voice(chat, file, caption=caption, caption_entities=msg.caption_entities, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
+            await client.send_voice(chat, file, caption=caption, caption_entities=msg.caption_entities, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
@@ -289,26 +294,27 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
             ph_path = await acc.download_media(msg.audio.thumbs[0].file_id)
         except:
             ph_path = None
-
         try:
-            await client.send_audio(chat, file, thumb=ph_path, caption=caption, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])   
+            await client.send_audio(chat, file, thumb=ph_path, caption=caption, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])   
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
-        
         if ph_path != None: os.remove(ph_path)
 
     elif "Photo" == msg_type:
         try:
-            await client.send_photo(chat, file, caption=caption, reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
-        except:
+            await client.send_photo(chat, file, caption=caption, parse_mode=enums.ParseMode.HTML)
+        except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
     
     if os.path.exists(f'{message.id}upstatus.txt'): 
         os.remove(f'{message.id}upstatus.txt')
-        os.remove(file)
-    await client.delete_messages(message.chat.id,[smsg.id])
+        try:
+            os.remove(file)
+        except:
+            pass
+    await client.delete_messages(message.chat.id, [smsg.id])
 
 
 # get the type of message
