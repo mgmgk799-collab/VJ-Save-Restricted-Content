@@ -63,7 +63,7 @@ async def send_start(client: Client, message: Message):
     buttons = [[
         InlineKeyboardButton("❣️ Developer", url = "https://t.me/kingvj01")
     ],[
-        InlineKeyboardButton('🔍 sᴜᴘᴘᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/vj_bot_disscussion'),
+        InlineKeyboardButton('🔍 sᴜပွᴏʀᴛ ɢʀᴏᴜᴘ', url='https://t.me/vj_bot_disscussion'),
         InlineKeyboardButton('🤖 ᴜᴘᴅᴀᴛᴇ ᴄʜᴀɴɴᴇʟ', url='https://t.me/vj_bots')
     ]]
     reply_markup = InlineKeyboardMarkup(buttons)
@@ -167,20 +167,11 @@ async def save(client: Client, message: Message):
             # public
             else:
                 username = datas[3]
-                try:
-                    msg = await client.get_messages(username, msgid)
-                except UsernameNotOccupied: 
-                    await client.send_message(message.chat.id, "The username is not occupied by anyone", reply_to_message_id=message.id)
-                    return
-                try:
-                    target_chat = int(CHANNEL_ID) if CHANNEL_ID else message.chat.id
-                    await client.copy_message(target_chat, msg.chat.id, msg.id)
-                except:
-                    try:    
-                        await handle_private(client, acc, message, username, msgid)               
-                    except Exception as e:
-                        if ERROR_MESSAGE == True:
-                            await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
+                try:    
+                    await handle_private(client, acc, message, username, msgid)               
+                except Exception as e:
+                    if ERROR_MESSAGE == True:
+                        await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id)
 
                 custom_wait = random.randint(30, 90)
                 await asyncio.sleep(custom_wait)
