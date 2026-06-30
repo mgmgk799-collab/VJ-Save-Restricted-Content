@@ -225,8 +225,6 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
     upload_delay = random.randint(5, 15)
     await asyncio.sleep(upload_delay)
     asyncio.create_task(upstatus(client, f'{message.id}upstatus.txt', smsg, chat))
-
-    caption = None
     
     if batch_temp.IS_BATCH.get(message.from_user.id): return 
             
@@ -236,7 +234,8 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         except:
             ph_path = None
         try:
-            await client.send_document(chat, file, thumb=ph_path, caption=caption, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
+            # Document တွေထဲမှာ ဗီဒီယိုတွေ ပါနေတတ်လို့ မူရင်း Caption ကို ပြန်ထည့်ပေးထားပါတယ်
+            await client.send_document(chat, file, thumb=ph_path, caption=msg.caption, caption_entities=msg.caption_entities, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
@@ -249,7 +248,6 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         except:
             ph_path = None
         try:
-            # ဗီဒီယိုအတွက် မူရင်း Caption ကို ပြန်သုံးပေးထားပါတယ်
             await client.send_video(chat, file, duration=msg.video.duration, width=msg.video.width, height=msg.video.height, thumb=ph_path, caption=msg.caption, caption_entities=msg.caption_entities, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             if ERROR_MESSAGE == True:
@@ -272,7 +270,8 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
 
     elif "Voice" == msg_type:
         try:
-            await client.send_voice(chat, file, caption=caption, caption_entities=msg.caption_entities, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
+            # Voice သီချင်းတွေအတွက် ကြော်ငြာစာတန်းတွေကို ပိတ်ထားဆဲဖြစ်ပါတယ်
+            await client.send_voice(chat, file, caption=None, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
@@ -283,7 +282,8 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
         except:
             ph_path = None
         try:
-            await client.send_audio(chat, file, thumb=ph_path, caption=caption, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])   
+            # Audio သီချင်းတွေအတွက် ကြော်ငြာစာတန်းတွေကို ပိတ်ထားဆဲဖြစ်ပါတယ်
+            await client.send_audio(chat, file, thumb=ph_path, caption=None, parse_mode=enums.ParseMode.HTML, progress=progress, progress_args=[message,"up"])   
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
@@ -291,11 +291,12 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
 
     elif "Photo" == msg_type:
         try:
-            await client.send_photo(chat, file, caption=caption, parse_mode=enums.ParseMode.HTML)
+            # ပုံ (Photo) တွေမှာလည်း စာသားရှိရင် ပေါ်အောင် ပြန်ပြင်ပေးထားပါတယ်
+            await client.send_photo(chat, file, caption=msg.caption, caption_entities=msg.caption_entities, parse_mode=enums.ParseMode.HTML)
         except Exception as e:
             if ERROR_MESSAGE == True:
                 await client.send_message(message.chat.id, f"Error: {e}", reply_to_message_id=message.id, parse_mode=enums.ParseMode.HTML)
-    
+        
     if os.path.exists(f'{message.id}upstatus.txt'): 
         os.remove(f'{message.id}upstatus.txt')
         try:
